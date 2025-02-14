@@ -3,36 +3,41 @@ import pandas as pd
 
 # --- STREAMLIT APP HEADER ---
 st.title("🏡 Fair Price Property Calculator")
-st.write("Calculate a **fair, speculation-free** property price & estimate your **stamp duty**.")
+st.write("Tired of property speculation nonsense? **Get the real, no-BS property price here.**")
 
 # --- USER INPUTS ---
 st.subheader("1️⃣ Land Details")
 land_area = st.number_input(
-    "Total Land Area (sqm)", 
+    "📏 Total Land Area (sqm)", 
     min_value=1, value=306, step=1,
-    help="Enter the **total** plot size (do not subtract building area)."
+    help="The whole dang block. Don't subtract anything. Just the total land area."
 )
 
 st.subheader("2️⃣ Building Details")
 num_floors = st.number_input(
-    "Number of Floors", 
+    "🏗 Number of Floors", 
     min_value=1, value=1, step=1,
-    help="For a single-story home, enter **1**. For a two-story home, enter **2**, and so on."
-)
-building_area_per_floor = st.number_input(
-    "Building Area Per Floor (sqm)", 
-    min_value=1, value=75, step=1,
-    help="Enter the **size of one floor** of the building."
+    help="Enter **how many levels** your house has. Yes, even if you have an attic where you hide Christmas decorations."
 )
 
-# Automatically calculate total building area
-total_building_area = num_floors * building_area_per_floor
-st.write(f"🏠 **Total Building Area:** {total_building_area} sqm")
+# Dynamic Floor Size Inputs
+floor_sizes = []
+for i in range(num_floors):
+    size = st.number_input(
+        f"🏠 Floor {i+1} Size (sqm)", 
+        min_value=1, value=75, step=1,
+        help=f"How big is floor {i+1}? If it's a shoebox, just be honest."
+    )
+    floor_sizes.append(size)
+
+# Calculate total building area
+total_building_area = sum(floor_sizes)
+st.write(f"🏠 **Total Building Area:** {total_building_area} sqm. Nice digs!")
 
 st.subheader("3️⃣ Cost Inputs")
 
 # --- LAND VALUE INPUT + GOVERNMENT LINKS ---
-st.write("💡 **Need help finding your land value?** Click your state below:")
+st.write("💡 **Don't know your land value?** Click your state below:")
 st.markdown(
     """
     - [📍 **Victoria (VIC) - Landchecker**](https://landchecker.com.au/)
@@ -47,25 +52,25 @@ st.markdown(
 )
 
 land_value = st.number_input(
-    "Land Value ($ per sqm)", 
+    "💰 Land Value ($ per sqm)", 
     min_value=1, value=3000, step=100,
-    help="Enter the **value of the land per sqm** (from your official state website above)."
+    help="Find this on your council rates notice or just guess wildly."
 )
 
 building_cost = st.number_input(
-    "Building Cost ($ per sqm)", 
+    "🔨 Building Cost ($ per sqm)", 
     min_value=1, value=2500, step=100,
-    help="Enter the **construction cost per sqm** (based on local build estimates)."
+    help="How much did it cost (or would it cost) to build? Be real."
 )
 
 # --- PROPERTY PRICE CALCULATION ---
 total_fair_price = (land_area * land_value) + (total_building_area * building_cost)
 
 # --- STAMP DUTY CALCULATION ---
-st.subheader("4️⃣ Stamp Duty Estimation")
+st.subheader("4️⃣ Stamp Duty (The Taxman Wants His Cut)")
 
 state = st.selectbox(
-    "Select Your State for Stamp Duty Calculation",
+    "📍 Select Your State for Stamp Duty Calculation",
     ["Victoria (VIC)", "New South Wales (NSW)", "Queensland (QLD)", "South Australia (SA)",
      "Western Australia (WA)", "Tasmania (TAS)", "Northern Territory (NT)", "Australian Capital Territory (ACT)"]
 )
@@ -83,30 +88,30 @@ stamp_duty_rates = {
 }
 
 stamp_duty = total_fair_price * stamp_duty_rates[state]
-st.write(f"📝 **Estimated Stamp Duty in {state}:** ${stamp_duty:,.2f}")
+st.write(f"📜 **Estimated Stamp Duty in {state}:** ${stamp_duty:,.2f}")
 
 # --- STAMP DUTY EXEMPTIONS ---
-st.write("💡 **Possible Stamp Duty Exemptions:**")
+st.write("💡 **Could You Dodge Stamp Duty?**")
 st.markdown(
     """
-    - **First Home Buyers** (some states offer full or partial exemptions)
-    - **Pensioners / Seniors** (varies by state)
-    - **Off-the-plan purchases** (in some cases)
-    - **Vacant Land / New Builds** (exemptions may apply)
-    - **Family Transfers** (for certain immediate family members)
-    - **Charity / Non-profit purchases** (where applicable)
-    
-    📌 **Check your official state website for full exemption rules!**
+    - **First Home Buyers** (Gov might cut you a break)
+    - **Pensioners / Seniors** (Old age perks)
+    - **Off-the-plan purchases** (Some lucky ones get a discount)
+    - **Vacant Land / New Builds** (No existing home = possible lower tax)
+    - **Family Transfers** (Parents giving you a free house? Nice.)
+    - **Charity / Non-profit purchases** (If you’re literally a saint)
+
+    📌 **Check your official state website for actual rules.**
     """
 )
 
 # --- DISPLAY FINAL PROPERTY PRICE & STAMP DUTY ---
-if st.button("Calculate Fair Price & Stamp Duty"):
-    st.subheader(f"🏡 Fair Property Price: **${total_fair_price:,.2f}**")
-    st.subheader(f"📜 Estimated Stamp Duty: **${stamp_duty:,.2f}**")
+if st.button("🎉 Show My Fair Property Price!"):
+    st.subheader(f"🏡 **Fair Property Price:** ${total_fair_price:,.2f}")
+    st.subheader(f"📜 **Estimated Stamp Duty:** ${stamp_duty:,.2f}")
 
 # --- GENERATE REPORT (Downloadable) ---
-if st.button("📥 Download Property Report"):
+if st.button("📥 Download My Property Report"):
     report_data = pd.DataFrame({
         "Category": ["Total Fair Property Price", "Estimated Stamp Duty", "State"],
         "Amount": [f"${total_fair_price:,.2f}", f"${stamp_duty:,.2f}", state]
@@ -116,7 +121,7 @@ if st.button("📥 Download Property Report"):
     report_csv = report_data.to_csv(index=False).encode('utf-8')
     
     st.download_button(
-        label="Download Report as CSV",
+        label="📥 Download Report as CSV",
         data=report_csv,
         file_name="FairPrice_Report.csv",
         mime="text/csv"
@@ -127,9 +132,9 @@ st.markdown(
     """
     ---
     **⚠️ Legal Disclaimer:**  
-    The calculated figures are for **informational purposes only**.  
-    FairPrice does not guarantee accuracy and these figures **must not be relied upon** for financial, legal, or investment decisions.  
-    Always consult official government resources or financial advisors before making property-related decisions.
+    This calculator **guesses things** based on what you enter. It’s **not legal advice**.  
+    FairPrice **doesn't take responsibility** for errors, and this figure **should not** be relied upon for financial, legal, or investment decisions.  
+    The taxman, real estate agents, and the bank probably won’t listen to this tool. Proceed with caution.
     """
 )
 
