@@ -9,7 +9,7 @@ st.write("Tired of property speculation nonsense? **Get the real, no-BS property
 st.subheader("1️⃣ Land Details")
 land_area = st.number_input(
     "📏 Total Land Area (sqm)", 
-    min_value=1, value=306, step=1,
+    min_value=1, value=1, step=1,
     help="The whole dang block. Don't subtract anything. Just the total land area."
 )
 
@@ -25,7 +25,7 @@ floor_sizes = []
 for i in range(num_floors):
     size = st.number_input(
         f"🏠 Floor {i+1} Size (sqm)", 
-        min_value=1, value=75, step=1,
+        min_value=1, value=1, step=1,
         help=f"How big is floor {i+1}? If it's a shoebox, just be honest."
     )
     floor_sizes.append(size)
@@ -60,7 +60,7 @@ land_value = st.number_input(
 building_cost = st.number_input(
     "🔨 Building Cost ($ per sqm)", 
     min_value=1, value=2500, step=100,
-    help="How much did it cost (or would it cost) to build? Be real."
+    help="How much did it cost (or would it cost) to build? Be real. Put $2500 if you ain't sure."
 )
 
 # --- PROPERTY PRICE CALCULATION ---
